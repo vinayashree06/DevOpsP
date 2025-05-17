@@ -10,7 +10,7 @@ pipeline {
         stage('Clone Repo') {
             steps {
                
-                git branch: 'main', url: 'https://github.com/Vinaya/book-review-app.git'
+                git branch: 'main', url: 'https://github.com/vinayashree06/DevOpsP'
 
             }
         }
