@@ -11,6 +11,9 @@ pipeline {
             steps {
                 echo "Cloning repository..."
                 git branch: 'main', url: 'https://github.com/vinayashree06/DevOpsP'
+
+                echo "Listing workspace files..."
+                bat "dir"
             }
         }
 
@@ -18,10 +21,10 @@ pipeline {
             steps {
                 script {
                     echo "Building frontend Docker image..."
-                    bat "docker build -t ${FRONTEND_IMAGE} ./book-review-app/frontend"
+                    bat "docker build -t ${FRONTEND_IMAGE} ./frontend"
 
                     echo "Building backend Docker image..."
-                    bat "docker build -t ${BACKEND_IMAGE} ./book-review-app/backend"
+                    bat "docker build -t ${BACKEND_IMAGE} ./backend"
                 }
             }
         }
