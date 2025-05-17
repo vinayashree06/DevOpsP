@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        FRONTEND_IMAGE = "vinaya/book-review-frontend:${BUILD_NUMBER}"
-        BACKEND_IMAGE  = "vinaya/book-review-backend:${BUILD_NUMBER}"
+        FRONTEND_IMAGE = "vinaya/book-review-frontend:%BUILD_NUMBER%"
+        BACKEND_IMAGE  = "vinaya/book-review-backend:%BUILD_NUMBER%"
     }
 
     stages {
@@ -18,10 +18,10 @@ pipeline {
             steps {
                 script {
                     echo "Building frontend Docker image..."
-                    bat 'docker build -t $FRONTEND_IMAGE ./frontend'
-                    
+                    bat 'docker build -t vinaya/book-review-frontend:%BUILD_NUMBER% ./frontend'
+
                     echo "Building backend Docker image..."
-                    bat 'docker build -t $BACKEND_IMAGE ./backend'
+                    bat 'docker build -t vinaya/book-review-backend:%BUILD_NUMBER% ./backend'
                 }
             }
         }
@@ -31,13 +31,13 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
                         echo "Logging into DockerHub..."
-                        bat 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                        bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
 
                         echo "Pushing frontend image to DockerHub..."
-                        bat 'docker push $FRONTEND_IMAGE'
+                        bat 'docker push vinaya/book-review-frontend:%BUILD_NUMBER%'
 
                         echo "Pushing backend image to DockerHub..."
-                        bat 'docker push $BACKEND_IMAGE'
+                        bat 'docker push vinaya/book-review-backend:%BUILD_NUMBER%'
                     }
                 }
             }
@@ -61,8 +61,8 @@ pipeline {
     post {
         always {
             echo "Cleaning up local Docker images..."
-            bat "docker rmi $FRONTEND_IMAGE || true"
-            bat "docker rmi $BACKEND_IMAGE || true"
+            bat 'docker rmi vinaya/book-review-frontend:%BUILD_NUMBER% || exit 0'
+            bat 'docker rmi vinaya/book-review-backend:%BUILD_NUMBER% || exit 0'
         }
 
         success {
