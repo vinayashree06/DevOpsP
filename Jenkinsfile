@@ -2,23 +2,25 @@ pipeline {
     agent any
 
     environment {
-        FRONTEND_IMAGE = "vinaya/book-review-frontend"
-        BACKEND_IMAGE  = "vinaya/book-review-backend"
+        FRONTEND_IMAGE = "vinaya/book-review-frontend:${BUILD_NUMBER}"
+        BACKEND_IMAGE  = "vinaya/book-review-backend:${BUILD_NUMBER}"
     }
 
     stages {
         stage('Clone Repo') {
             steps {
-               
+                echo "Cloning repository..."
                 git branch: 'main', url: 'https://github.com/vinayashree06/DevOpsP'
-
             }
         }
 
         stage('Build Docker Images') {
             steps {
                 script {
+                    echo "Building frontend Docker image..."
                     sh 'docker build -t $FRONTEND_IMAGE ./frontend'
+                    
+                    echo "Building backend Docker image..."
                     sh 'docker build -t $BACKEND_IMAGE ./backend'
                 }
             }
@@ -28,8 +30,13 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
+                        echo "Logging into DockerHub..."
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+
+                        echo "Pushing frontend image to DockerHub..."
                         sh 'docker push $FRONTEND_IMAGE'
+
+                        echo "Pushing backend image to DockerHub..."
                         sh 'docker push $BACKEND_IMAGE'
                     }
                 }
@@ -39,12 +46,31 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
+                    echo "Deploying frontend to Kubernetes..."
                     sh 'kubectl apply -f k8s/frontend-deployment.yaml'
                     sh 'kubectl apply -f k8s/frontend-service.yaml'
+
+                    echo "Deploying backend to Kubernetes..."
                     sh 'kubectl apply -f k8s/backend-deployment.yaml'
                     sh 'kubectl apply -f k8s/backend-service.yaml'
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            echo "Cleaning up local Docker images..."
+            sh "docker rmi $FRONTEND_IMAGE || true"
+            sh "docker rmi $BACKEND_IMAGE || true"
+        }
+
+        success {
+            echo "Pipeline executed successfully!"
+        }
+
+        failure {
+            echo "Pipeline failed. Please check logs."
         }
     }
 }
