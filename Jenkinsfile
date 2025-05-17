@@ -30,21 +30,19 @@ pipeline {
         }
 
         stage('Push Docker Images') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    script {
-                        echo "Logging into DockerHub..."
-                        bat "echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin"
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+            script {
+                echo "Logging into DockerHub..."
+                echo "DOCKER_USER is: ${DOCKER_USER}"
+                echo "DOCKER_PASS is: ${DOCKER_PASS ? 'Present ✅' : 'Missing ❌'}"
 
-                        echo "Pushing frontend image to DockerHub..."
-                        bat "docker push ${FRONTEND_IMAGE}"
-
-                        echo "Pushing backend image to DockerHub..."
-                        bat "docker push ${BACKEND_IMAGE}"
-                    }
-                }
+                bat "echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin"
             }
         }
+    }
+}
+
 
         stage('Deploy to Kubernetes') {
             steps {
