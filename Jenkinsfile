@@ -18,10 +18,10 @@ pipeline {
             steps {
                 script {
                     echo "Building frontend Docker image..."
-                    sh 'docker build -t $FRONTEND_IMAGE ./frontend'
+                    bat 'docker build -t $FRONTEND_IMAGE ./frontend'
                     
                     echo "Building backend Docker image..."
-                    sh 'docker build -t $BACKEND_IMAGE ./backend'
+                    bat 'docker build -t $BACKEND_IMAGE ./backend'
                 }
             }
         }
@@ -31,13 +31,13 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
                         echo "Logging into DockerHub..."
-                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                        bat 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
 
                         echo "Pushing frontend image to DockerHub..."
-                        sh 'docker push $FRONTEND_IMAGE'
+                        bat 'docker push $FRONTEND_IMAGE'
 
                         echo "Pushing backend image to DockerHub..."
-                        sh 'docker push $BACKEND_IMAGE'
+                        bat 'docker push $BACKEND_IMAGE'
                     }
                 }
             }
@@ -47,12 +47,12 @@ pipeline {
             steps {
                 script {
                     echo "Deploying frontend to Kubernetes..."
-                    sh 'kubectl apply -f k8s/frontend-deployment.yaml'
-                    sh 'kubectl apply -f k8s/frontend-service.yaml'
+                    bat 'kubectl apply -f k8s/frontend-deployment.yaml'
+                    bat 'kubectl apply -f k8s/frontend-service.yaml'
 
                     echo "Deploying backend to Kubernetes..."
-                    sh 'kubectl apply -f k8s/backend-deployment.yaml'
-                    sh 'kubectl apply -f k8s/backend-service.yaml'
+                    bat 'kubectl apply -f k8s/backend-deployment.yaml'
+                    bat 'kubectl apply -f k8s/backend-service.yaml'
                 }
             }
         }
@@ -61,8 +61,8 @@ pipeline {
     post {
         always {
             echo "Cleaning up local Docker images..."
-            sh "docker rmi $FRONTEND_IMAGE || true"
-            sh "docker rmi $BACKEND_IMAGE || true"
+            bat "docker rmi $FRONTEND_IMAGE || true"
+            bat "docker rmi $BACKEND_IMAGE || true"
         }
 
         success {
