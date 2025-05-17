@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        FRONTEND_IMAGE = "vinayashreer/book-frontend:${BUILD_NUMBER}"
-        BACKEND_IMAGE  = "vinayashreer/book-backend:${BUILD_NUMBER}"
+        FRONTEND_IMAGE = "vinayashreer/book-frontend:${BUILD_NUMBER}" // Use the correct frontend image name
+        BACKEND_IMAGE  = "vinayashreer/book-backend:${BUILD_NUMBER}"  // Use the correct backend image name
     }
 
     stages {
@@ -61,8 +61,8 @@ pipeline {
     post {
         always {
             echo "Cleaning up local Docker images..."
-            bat "docker rmi ${FRONTEND_IMAGE} || exit 0"
-            bat "docker rmi ${BACKEND_IMAGE} || exit 0"
+            bat "docker rmi vinayashreer/book-frontend:${BUILD_NUMBER} || exit 0" // Clean up frontend image
+            bat "docker rmi vinayashreer/book-backend:${BUILD_NUMBER} || exit 0"  // Clean up backend image
         }
 
         success {
