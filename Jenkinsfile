@@ -37,7 +37,8 @@ pipeline {
                 echo "DOCKER_USER is: ${DOCKER_USER}"
                 echo "DOCKER_PASS is: ${DOCKER_PASS ? 'Present ✅' : 'Missing ❌'}"
 
-                bat "echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin"
+                bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
+
             }
         }
     }
