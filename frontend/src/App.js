@@ -387,7 +387,7 @@ function App() {
                       </ul>
                     )
 : (
-<p>No reviews</p>
+<p>No reviews yet</p>
 )}
                 {/* Add review form */}
                 <div
