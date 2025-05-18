@@ -14,10 +14,9 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: book-frontend:latest
-          imagePullPolicy: Never
+          image: vinayashreer/book-frontend:latest  # This will be updated in Jenkins
           ports:
-            - containerPort: 80  # 🔁 NGINX serves on port 80
+            - containerPort: 80  # NGINX default port
 ---
 apiVersion: v1
 kind: Service
@@ -30,5 +29,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30080  # You can access the app on http://localhost:30080
+      nodePort: 30080  # Access via http://localhost:30080
   type: NodePort

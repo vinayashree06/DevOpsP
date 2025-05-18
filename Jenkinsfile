@@ -52,15 +52,15 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    echo "🚀 Deploying frontend to Kubernetes..."
+                    echo "🚀 Applying Kubernetes manifests..."
                     bat 'kubectl apply -f k8s/frontend-deployment.yaml'
                     bat 'kubectl apply -f k8s/frontend-service.yaml'
-
-                    echo "🚀 Deploying backend to Kubernetes..."
                     bat 'kubectl apply -f k8s/backend-deployment.yaml'
                     bat 'kubectl apply -f k8s/backend-service.yaml'
 
-                    // Optional: Ensure imagePullPolicy is Always in YAMLs for fresh pulls
+                    echo "🚀 Updating Kubernetes deployments with new image tags..."
+                    bat "kubectl set image deployment/frontend-deployment frontend=${FRONTEND_IMAGE} --record"
+                    bat "kubectl set image deployment/backend-deployment backend=${BACKEND_IMAGE} --record"
                 }
             }
         }
