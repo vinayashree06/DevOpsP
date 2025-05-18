@@ -408,7 +408,7 @@ function App() {
                   <input
                     type="text"
                     name="comment"
-                    placeholder="Comment"
+                    placeholder="Review"
                     value={reviewInputs[book._id]?.comment || ''}
                     onChange={(e) => handleReviewInputChange(book._id, e)}
                     style={{ marginRight: 8, padding: 6, width: 250 }}
